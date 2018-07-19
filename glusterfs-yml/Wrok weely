@@ -1,0 +1,13 @@
+
+Summary:
+  1、持续关注qa和生产环境的业务系统，了解业务系统的架构及业务逻辑；
+  2、部署qa环境的zabbix监控和grafana图形展示的反向代理及监控；
+  3、部署测试平台Kubernetes的分布式文件系统Glusterfs-Cluster；
+  4、部署测试Rancher管理平台，如管理Kubernetes，权限控制，应用仓库，应用一键部署等。
+  
+Plan:
+  1、持续关注qa和生产环境的业务系统，了解业务系统的架构及业务逻辑；
+  2、推进zabbix监控指标的实施；
+  3、熟悉生产系统的CI集成；
+  4、继续测试Kubernetes平台的CI/CD应用集成与发布。
+  5、继续测试Rancher管理平台的host监控、pod监控系统(datadog)
