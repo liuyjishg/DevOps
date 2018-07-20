@@ -1,3 +1,4 @@
+##创建namespaces ci
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -5,4 +6,138 @@ metadata:
    labels:
      name: ci
      
+##创建endpoints集群，用于将Glusterfs的各节点添加进来
 ---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: glusterfs-cluster
+  namespace: ci
+subsets:
+  - addresses:
+      - ip: 192.168.22.21
+    ports:
+      - port: 20
+  - addresses:
+      - ip: 192.168.22.22
+    ports:
+      - port: 20
+
+##给Glusterfs-Cluseer创建一个Service IP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: glusterfs-cluster
+  namespace: ci
+spec:
+  ports:
+    - port: 20
+    
+##创建Glusterfs的PV
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: glusterfs-cluster
+  namespace: ci
+  labels:
+    pv: glusterfs-cluster
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  glusterfs:
+    endpoints: "glusterfs-cluster"
+    path: "k8s-volume"
+    readOnly: false
+   
+##创建PVC 
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins-5g
+  namespace: ci
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      pv: glusterfs-cluster
+
+##创建ServiceAccount
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins
+  namespace: ci
+  
+##创建RBAC权限
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: jenkins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: jenkins
+  namespace: ci
+
+##部署Jenkins应用
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: ci
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: jenkins
+    spec:
+      serviceAccount: jenkins
+      containers:
+      - name: jenkins
+        image: registry.cn-hangzhou.aliyuncs.com/spacexnice/jenkins:latest
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: /var/jenkins_home
+          name: home
+      volumes:
+        - name: home
+          persistentVolumeClaim:
+            claimName: jenkins-5g
+
+##给Jenkins端口暴露
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-svc
+  namespace: ci
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: web
+  - port: 50000
+    targetPort: 50000
+    name: slave
+  selector:
+    k8s-app: jenkins
+  type: LoadBalancer
+  
+  ##完结...
+  
