@@ -1,3 +1,19 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins-5g
+  namespace: ci
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      pv: glusterfs-cluster
+                                
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -41,7 +57,7 @@ spec:
       volumes:
         - name: home
           persistentVolumeClaim:
-            claimName: gfs-jenkins-5g
+            claimName: jenkins-5g
 
 ---
 apiVersion: v1
