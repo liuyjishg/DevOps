@@ -1,0 +1,83 @@
+01-namespaces.yaml  02-glusterfs-pv.yaml
+[root@qas-k8s-master01 Glusterfs]# cat 02-glusterfs-pv.yaml
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: glusterfs-cluster
+  namespace: ci
+subsets:
+  - addresses:
+      - ip: 192.168.22.21
+    ports:
+      - port: 20
+  - addresses:
+      - ip: 192.168.22.22
+    ports:
+      - port: 20
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: glusterfs-cluster
+  namespace: ci
+spec:
+  ports:
+    - port: 20
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gluster-jenkins
+  namespace: ci
+  labels:
+    pv: glusterfs-jenkins
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  glusterfs:
+    endpoints: "glusterfs-cluster"
+    path: "k8s-jenkins"
+    readOnly: false
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gluster-appdata
+  namespace: ci
+  labels:
+    pv: glusterfs-appdata
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  glusterfs:
+    endpoints: "glusterfs-cluster"
+    path: "k8s-AppData"
+    readOnly: false
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gluster-logdata
+  namespace: ci
+  labels:
+    pv: glusterfs-logdata
+spec:
+  capacity:
+    storage: 150Gi
+  accessModes:
+    - ReadWriteMany
+  glusterfs:
+    endpoints: "glusterfs-cluster"
+    path: "k8s-LogData"
+    readOnly: false
+    
+    
+    
