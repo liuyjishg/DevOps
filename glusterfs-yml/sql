@@ -15,8 +15,8 @@ SELECT
 		),
 		120
 	) as time,
-	u.order_amount,
-	u.order_count
+	u.order_amount as "交易金额",
+	u.order_count AS "交易次数"
 FROM
 	(
 		SELECT
@@ -40,7 +40,7 @@ FROM
 					[MobileCheckout].[dbo].[order]
 				WHERE
 					status >= 30
-				AND  $__timeFilter(paid_time)
+				AND $__timeFilter(paid_time)
 			) t
 		WHERE
 			t.p_year IS NOT NULL
@@ -50,7 +50,9 @@ FROM
 			t.p_day,
 			t.p_hour,
 			t.p_mi
-	) u
+	) u 
+	;
+	
 	
 	
 	
