@@ -1,52 +1,55 @@
 SELECT
-	CONVERT (
-		datatime (
-			CONCAT (
-				u.p_year,
-				'-',
-				u.p_month,
-				'-',
-				u.p_day,
-				' ',
-				u.p_hour,
-				':',
-				u.p_mi * 15
-			),
-			120
-		) AS times,
-		u.order_amount,
-		u.order_count
-	FROM
-		(
-			SELECT
-				SUM (t.amount) AS order_amount,
-				COUNT (*) AS order_count,
-				t.p_year AS p_year,
-				t.p_month AS p_month,
-				t.p_day AS p_day,
-				t.p_hour AS p_hour,
-				t.p_mi AS p_mi
-			FROM
-				(
-					SELECT
-						amount,
-						YEAR (paid_time) AS p_year,
-						MONTH (paid_time) AS p_month,
-						DAY (paid_time) AS p_day,
-						datepart(hh, paid_time) AS p_hour,
-						datepart(mi, paid_time) / 15 AS p_mi
-					FROM
-						[MobileCheckout].[dbo].[order]
-					WHERE
-						status >= 30
-					AND $__timeFilter (paid_time)
-				) t
-			GROUP BY
-				t.p_year,
-				t.p_month,
-				t.p_day,
-				t.p_hour,
-				t.p_mi
-		) u
-    
-    
+	CONVERT(
+		datetime,
+		concat(
+			u.p_year,
+			'-',
+			u.p_month,
+			'-',
+			u.p_day,
+			' ',
+			u.p_hour,
+			':',
+			u.p_mi * 15,
+			':00'
+		),
+		120
+	) as time,
+	u.order_amount,
+	u.order_count
+FROM
+	(
+		SELECT
+			SUM(t.amount) AS order_amount,
+			COUNT(*) AS order_count,
+			t.p_year AS p_year,
+			t.p_month AS p_month,
+			t.p_day AS p_day,
+			t.p_hour AS p_hour,
+			t.p_mi AS p_mi
+		FROM
+			(
+				SELECT
+					amount,
+					YEAR(paid_time) AS p_year,
+					MONTH(paid_time) AS p_month,
+					DAY(paid_time) AS p_day,
+					datepart(hh, paid_time) AS p_hour,
+					datepart(mi, paid_time) / 15 AS p_mi
+				FROM
+					[MobileCheckout].[dbo].[order]
+				WHERE
+					status >= 30
+			) t
+		WHERE
+			t.p_year IS NOT NULL
+		GROUP BY
+			t.p_year,
+			t.p_month,
+			t.p_day,
+			t.p_hour,
+			t.p_mi
+	) u
+	
+	
+	
