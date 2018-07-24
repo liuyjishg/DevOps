@@ -1,0 +1,12 @@
+select u.order_amount,u.order_count,
+CONCAT(u.p_year,'-',u.p_month,'-',u.p_day,' ',u.p_hour,':',u.p_mi*15) as dates
+from
+(select sum(t.amount) as order_amount , count(*) as order_count ,
+t.p_year,t.p_month,t.p_day as p_day ,t.p_hour as p_hour,t.p_mi as p_mi  
+from (select amount,year(paid_time) as p_year,month(paid_time) as p_month,day(paid_time) as p_day ,
+datepart(hh , paid_time) as p_hour , datepart(mi , paid_time) / 15  as p_mi 
+from [MobileCheckout].[dbo].[order]
+where status >= 30  and
+$__timeFilter(paid_time)
+) t 
+group by t.p_year,t.p_month,t.p_day ,t.p_hour,t.p_mi ) u order by u.p_year,u.p_month,u.p_day,u.p_hour,u.p_mi;
