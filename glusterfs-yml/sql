@@ -40,6 +40,7 @@ FROM
 					[MobileCheckout].[dbo].[order]
 				WHERE
 					status >= 30
+				AND  $__timeFilter(paid_time)
 			) t
 		WHERE
 			t.p_year IS NOT NULL
