@@ -1,45 +1,60 @@
-
+##创建namespaces ci
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ci
-  labels:
-    name: ci
-
+   name: ci
+   labels:
+     name: ci
+     
+##创建Glusterfs的PV
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: jenkins
+  name: nfs-jenkins
   namespace: ci
+  labels:
+    pv: nfs-jenkins
 spec:
   capacity:
-    storage: 5Gi
+    storage: 10Gi
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
     path: /data/jenkins
     server: 192.168.22.8
-
+#  glusterfs:
+#    endpoints: "glusterfs-cluster"
+#   path: "k8s-volume"
+#    readOnly: false
+   
+##创建PVC 
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: jenkins
+  name: jenkins-pv
   namespace: ci
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 5Gi
+      storage: 10Gi
+  selector:
+    matchLabels:
+      pv: nfs-jenkins
+
+##创建ServiceAccount
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: jenkins
   namespace: ci
+  
+##创建RBAC权限
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -54,6 +69,7 @@ subjects:
   name: jenkins
   namespace: ci
 
+##部署Jenkins应用
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -78,8 +94,9 @@ spec:
       volumes:
         - name: home
           persistentVolumeClaim:
-            claimName: jenkins
+            claimName: jenkins-pv
 
+##给Jenkins端口暴露
 ---
 apiVersion: v1
 kind: Service
@@ -96,7 +113,7 @@ spec:
     name: slave
   selector:
     k8s-app: jenkins
-    type: LoadBalancer
-    
-    
- ### 完结 ###
+  type: LoadBalancer
+  
+  ##完结...
+  
