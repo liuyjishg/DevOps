@@ -92,3 +92,7 @@ spec:
     nodePort: 20080
   selector:
     name: nginx-test
+    
+    
+    
+ ##### 
