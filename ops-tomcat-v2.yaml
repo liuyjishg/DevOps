@@ -1,0 +1,58 @@
+## 创建namespaces
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: ops
+   labels:
+     name: ops
+
+
+## 部署应用:运维平台
+---
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: ops-test
+  labels:
+    name: ops-test
+  namespace: ops
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+       name: ops-test
+    spec:
+      containers:
+      - name: ops-test
+        image: 10.88.0.56/project/ope:v6
+        ports:
+        - containerPort: 8080
+
+
+
+## 创建Service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ops-svc
+  labels:
+   name: ops-svc
+  namespace: ops
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+    name: http
+    nodePort: 28080
+  selector:
+    name: ops-test
+
+
+
+
