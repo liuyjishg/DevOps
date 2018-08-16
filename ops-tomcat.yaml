@@ -17,7 +17,7 @@ metadata:
     name: ops-test
   namespace: ops
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     name: ops-test
   template:
