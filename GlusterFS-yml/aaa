@@ -11,8 +11,8 @@ Summary:
 	   b、部署mysql数据库，将数据迁移至kubernetes平台(完成);
 	   c、写k8s部署应用的yaml文件，部署运维平台ope到k8s（完成）;
 Plan:
-	1、继续完;
-	2、跟进小程序的部署进度与过程。
+	1、继续完成kubernetes平台上的jenkins的cicd流程;
+	
 
 
 
