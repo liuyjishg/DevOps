@@ -1,12 +1,17 @@
 
 
 Summary: 
-	1、跟着Chad熟悉虚拟机分配平台;
-	2、将扫码购交易数据用Grafana展示到大屏幕;
-	3、建Zabbix监控jmx指标模板和触发器。
-
+	1、将代码托管平台gogs部署到qa-kubernetes平台上（完成）;
+	2、部署jenkins+pipeline持续集成与发布工具到qa-kubernetes平台（完成70%）
+	   a、将jenkins工具docker镜像化（完成）;
+	   b、写k8s部署应用的yaml（包含：namespace,service,pv,pvc,deployment,raba）文件部署jenkins到k8s（完成）;
+	   c、jeknins插件部署，如：maven,pipeline,ant,git,views等众多构建cicd所需要的插件(未完成，下周继续);
+	3、部署walmart运维平台到kubernetes平台上（完成）
+	   a、将运维平台ope运行的环境构建成docker镜像(完成);
+	   b、部署mysql数据库，将数据迁移至kubernetes平台(完成);
+	   c、写k8s部署应用的yaml文件，部署运维平台ope到k8s（完成）;
 Plan:
-	1、熟悉下听云监控平台;
+	1、继续完;
 	2、跟进小程序的部署进度与过程。
 
 
