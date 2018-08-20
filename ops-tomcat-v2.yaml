@@ -7,10 +7,8 @@ metadata:
    labels:
      name: ops
 
-
 ## 部署应用:运维平台
 ---
-
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
@@ -19,7 +17,7 @@ metadata:
     name: ops-test
   namespace: ops
 spec:
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
@@ -30,8 +28,6 @@ spec:
         image: 10.88.0.56/project/ope:v6
         ports:
         - containerPort: 8080
-
-
 
 ## 创建Service
 ---
@@ -50,9 +46,9 @@ spec:
     targetPort: 8080
     name: http
     nodePort: 28080
+    sessionAffinity: ClientIP      ##--当pod有2个以上，如应用需要session保持，则加此参
   selector:
     name: ops-test
 
 
-
-
+####--END--###Kevin
