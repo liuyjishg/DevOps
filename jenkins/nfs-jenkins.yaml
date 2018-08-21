@@ -113,7 +113,8 @@ spec:
     name: slave
   selector:
     k8s-app: jenkins
-  type: LoadBalancer
+ # type: LoadBalancer
+  type: NodePort
   
   ##完结...
   
