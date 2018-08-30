@@ -45,12 +45,12 @@ metadata:
     pv: glusterfs-cluster
 spec:
   capacity:
-    storage: 5Gi
+    storage: 10Gi
   accessModes:
     - ReadWriteMany
   glusterfs:
     endpoints: "glusterfs-cluster"
-    path: "k8s-volume"
+    path: "gfs-jenkins"
     readOnly: false
    
 ##创建PVC 
@@ -58,7 +58,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: jenkins-5g
+  name: jenkins-10g
   namespace: ci
 spec:
   accessModes:
@@ -96,12 +96,14 @@ subjects:
 ##部署Jenkins应用
 ---
 apiVersion: extensions/v1beta1
-kind: Deployment
+#kind: Deployment
+#kind: ReplicaSet
+kind: StatefulSet
 metadata:
   name: jenkins
   namespace: ci
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -128,16 +130,18 @@ metadata:
   name: jenkins-svc
   namespace: ci
 spec:
+  type: NodePort
   ports:
   - port: 80
     targetPort: 8080
     name: web
+    nodePort: 28080
+    sessionAffinity: ClientIP
   - port: 50000
     targetPort: 50000
     name: slave
   selector:
     k8s-app: jenkins
-  type: LoadBalancer
   
   ##完结...
   
