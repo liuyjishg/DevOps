@@ -112,7 +112,7 @@ spec:
       serviceAccount: jenkins
       containers:
       - name: jenkins
-        image: registry.cn-hangzhou.aliyuncs.com/spacexnice/jenkins:latest
+        image: jenkins/jenkins:latest
         imagePullPolicy: Always
         volumeMounts:
         - mountPath: /var/jenkins_home
