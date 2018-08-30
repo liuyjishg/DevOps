@@ -96,14 +96,14 @@ subjects:
 ##部署Jenkins应用
 ---
 apiVersion: extensions/v1beta1
-#kind: Deployment
+kind: Deployment
 #kind: ReplicaSet
-kind: StatefulSet
+#kind: StatefulSet
 metadata:
   name: jenkins
   namespace: ci
 spec:
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -120,7 +120,7 @@ spec:
       volumes:
         - name: home
           persistentVolumeClaim:
-            claimName: jenkins-5g
+            claimName: jenkins-10g
 
 ##给Jenkins端口暴露
 ---
@@ -136,7 +136,7 @@ spec:
     targetPort: 8080
     name: web
     nodePort: 28080
-    sessionAffinity: ClientIP
+#    sessionAffinity: ClientIP
   - port: 50000
     targetPort: 50000
     name: slave
