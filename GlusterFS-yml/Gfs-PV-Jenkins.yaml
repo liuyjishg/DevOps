@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-   name: ci
+   name: default
    labels:
-     name: ci
+     name: default
      
 ##创建endpoints集群，用于将Glusterfs的各节点添加进来
 ---
@@ -12,7 +12,7 @@ kind: Endpoints
 apiVersion: v1
 metadata:
   name: glusterfs-cluster
-  namespace: ci
+  namespace: default
 subsets:
   - addresses:
       - ip: 192.168.22.21
@@ -29,7 +29,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: glusterfs-cluster
-  namespace: ci
+  namespace: default
 spec:
   ports:
     - port: 20
@@ -40,7 +40,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: glusterfs-cluster
-  namespace: ci
+  namespace: default
   labels:
     pv: glusterfs-cluster
 spec:
@@ -59,13 +59,13 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: jenkins-10g
-  namespace: ci
+  namespace: default
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 5Gi
+      storage: 10Gi
   selector:
     matchLabels:
       pv: glusterfs-cluster
@@ -76,7 +76,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: jenkins
-  namespace: ci
+  namespace: default
   
 ##创建RBAC权限
 ---
@@ -91,7 +91,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: jenkins
-  namespace: ci
+  namespace: default
 
 ##部署Jenkins应用
 ---
@@ -101,7 +101,7 @@ kind: Deployment
 #kind: StatefulSet
 metadata:
   name: jenkins
-  namespace: ci
+  namespace: default
 spec:
   replicas: 1
   template:
@@ -128,7 +128,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: jenkins-svc
-  namespace: ci
+  namespace: default
 spec:
   type: NodePort
   ports:
