@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+    environment { 
+    def ITEMNAME = "webapp"
+    def DESTPATH = "/data/wwwroot"
+    def SRCPATH = "~/.jenkins/workspace/test-02"
+    }
+    stages {    
+        stage('代码拉取'){
+            steps {
+            echo "checkout from ${ITEMNAME}"
+            git url: 'git@192.168.22.5:root/sim-java.git', branch: 'master'
+            //git credentialsId:CRED_ID, url:params.repoUrl, branch:params.repoBranch
+            }
+        }
+        stage('目录检查') {
+            steps {
+                echo "检查${DESTPATH}目录是否存在"
+                script{
+                    def resultUpdateshell = sh script: 'ansible webapp -m shell -a "ls -d ${DESTPATH}"'
+                    if (resultUpdateshell == 0) {
+                        skip = '0'
+                        return
+                    }   
+                }
+            }
+        }       
+        stage('服务检查') {
+            steps {
+                echo "检查nginx进程是否存在"
+                script{
+                    def resultUpdateshell = sh script: 'ansible webapp -m shell -a "ps aux|grep nginx|grep -v grep"'
+                    if (resultUpdateshell == 0) {
+                        skip = '0'
+                        return
+                    }   
+                }
+            }
+        }
+        stage('发布确认') {
+            steps {
+                input "检查完成，是否发布?"
+            }
+        }                   
+        stage('代码推送') {
+            steps {
+                echo "code sync"
+                sh "ansible ${ITEMNAME} -m synchronize -a 'src=${SRCPATH}/ dest=${DESTPATH}/ rsync_opts=-avz,--exclude=.git,--delete'"
+            }
+        }
+    }
+}
+
