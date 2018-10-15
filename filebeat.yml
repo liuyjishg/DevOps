@@ -1,3 +1,4 @@
+#--------------------------- log inputs ------------------------------
 filebeat.inputs:
 - type: log
   enabled: true
@@ -34,7 +35,11 @@ filebeat.inputs:
   multiline.negate: false
   multiline.match: after
   tags: ["user"]
-
+  
+#--------------------------- redis output ------------------------------
 output.redis:
   hosts: ["10.88.0.x:6379"]
   key: "app-log
+
+xpack.monitoring.enabled: false
+##--Kevin
