@@ -4,7 +4,7 @@ filebeat.inputs:
   enabled: true
   paths:
     - /log/path/app1.log
-  multiline.pattern: '^feign|^[[:space:]]+(at|\.{3})\b|^Caused by:'
+  multiline.pattern: '^com\.freemud|^feign\.com|^[[:space:]]+(at|\.{3})\b|^Caused by:'
   multiline.negate: false
   multiline.match: after
   tags: ["goods"]
@@ -13,29 +13,12 @@ filebeat.inputs:
   enabled: true
   paths:
     - /log/path/app2.log
-  multiline.pattern: '^feign|^[[:space:]]+(at|\.{3})\b|^Caused by:'
+  multiline.pattern: '^com\.freemud|^feign\.com|^[[:space:]]+(at|\.{3})\b|^Caused by:'
   multiline.negate: false
   multiline.match: after
   tags: ["order"]
 
-- type: log
-  enabled: true
-  paths:
-    - /log/path/app3.log
-  multiline.pattern: '^feign|^[[:space:]]+(at|\.{3})\b|^Caused by:'
-  multiline.negate: false
-  multiline.match: after
-  tags: ["shopping"]
 
-- type: log
-  enabled: true
-  paths:
-    - /log/path/app4.log
-  multiline.pattern: '^feign|^[[:space:]]+(at|\.{3})\b|^Caused by:'
-  multiline.negate: false
-  multiline.match: after
-  tags: ["user"]
-  
 #--------------------------- redis output ------------------------------
 output.redis:
   hosts: ["10.88.0.x:6379"]
