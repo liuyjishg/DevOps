@@ -1,0 +1,10 @@
+cluster.name: efk-cluster
+node.name: efk-node01
+path.data: /data/elasticsearch/data
+path.logs: /data/elasticsearch/logs
+network.host: 0.0.0.0
+http.port: 9200
+discovery.zen.ping.unicast.hosts: ["10.0.0.10", "10.0.0.11", "10.0.0.12"]
+discovery.zen.minimum_master_nodes: 2
+bootstrap.system_call_filter: false
+xpack.security.enabled: false
