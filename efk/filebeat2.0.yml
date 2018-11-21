@@ -30,7 +30,10 @@ processors:
       when:
           regexp:
               message: "Resolving eureka"
-
+  - drop_event:
+      when:
+          regexp:
+              message: "DEBUG"
 
 #--------------------------- redis output ------------------------------
 output.redis:
