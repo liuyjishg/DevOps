@@ -33,3 +33,4 @@ consul-server-03  10.1.1.13:8301  alive   server  1.4.0  2         walmart-datac
 consul-client-01  10.1.1.14:8301  alive   client  1.4.0  2         walmart-datacenter  <default>
 
 
+https://www.cnblogs.com/learn-dotnet/p/6835461.html
