@@ -1,0 +1,11 @@
+{
+  "datacenter": "data",
+  "data_dir": "/data/consul/data",
+  "log_level": "INFO",
+  "node_name": "consul-01",
+  "server": true,
+  "bootstrap_expect": 3,
+  "addresses": {
+        "http": "0.0.0.0"
+  }
+}
