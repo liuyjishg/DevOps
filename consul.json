@@ -1,13 +1,13 @@
 {
-  "datacenter": "data",
-  "data_dir": "/data/consul/data",
-  "log_level": "INFO",
-  "node_name": "consul-01",
-  "server": true,
-  "bootstrap_expect": 3,
-  "disable_update_check": true,
+  "datacenter": "data",              #数据名称
+  "data_dir": "/data/consul/data",   #数据文件路径
+  "log_level": "INFO",               #打印日志级别
+  "node_name": "consul-01",          #集群节点name
+  "server": true,                    #是否是server节点
+  "bootstrap_expect": 3,             #有几个server节点
+  "disable_update_check": true,      #关闭检查更新
   "addresses": {
-        "http": "0.0.0.0"
+        "http": "0.0.0.0"            #监控的ip
   }
 }
 
@@ -18,5 +18,18 @@ vim start_consul.sh
 
 #!/bin/bash
 ./consul agent -ui -config-file=config.json  &>/u1/consul/logs/consul-server.log  &
+
+
+---------------------------------------------------path 3
+
+# consul join 10.1.1.12 10.1.1.13 10.1.1.14           #将节点加入到集群进行选举cluster leader
+Successfully joined cluster by contacting 3 nodes.
+
+# consul members                                      #查看集群状态
+Node              Address            Status  Type    Build  Protocol  DC                  Segment
+consul-server-01  10.1.1.11:8301  alive   server  1.4.0  2         walmart-datacenter  <all>
+consul-server-02  10.1.1.12:8301  alive   server  1.4.0  2         walmart-datacenter  <all>
+consul-server-03  10.1.1.13:8301  alive   server  1.4.0  2         walmart-datacenter  <all>
+consul-client-01  10.1.1.14:8301  alive   client  1.4.0  2         walmart-datacenter  <default>
 
 
