@@ -1,0 +1,97 @@
+#!/bin/sh
+
+AppName=$2
+OPTS=" -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:MaxHeapSize=2048m -XX:ParallelGCThreads=4 "
+if [ "$1" = "" ];
+then
+    echo "------------------------------------"
+    echo -e "\033[0;31m 未输入操作 \033[0m  \033[0;34m {start|stop|restart|status} \033[0m"
+    exit 1
+fi
+#AppNameDefault 要求启动脚本和app启动jar要放同一目录
+cd $(dirname $0)
+
+pwd
+AppNameDefault=`ls *.jar |head -1`
+if [ "$AppName" = "" ];
+then
+  echo "------------------------------------"
+  echo -e "\033[0;31m 获取默认$AppNameDefault \033[0m"
+  AppName=$AppNameDefault
+fi
+
+if [ "$AppName" = "" ];
+then
+    echo "------------------------------------"
+    echo -e "\033[0;31m 未找到AppName,请确认... \033[0m"
+    exit 1
+fi
+
+function start()
+{
+	count=`ps -ef |grep java|grep $AppName|grep -v grep|wc -l`
+	if [ $count != 0 ];then
+                echo "------------------------------------"
+		echo "$AppName is running..."
+	else
+                echo "------------------------------------"
+                #'> /dev/null 2>&1'
+		/usr/local/jdk/bin/java  $OPTS -jar $AppName > start.txt  &
+                 echo "Start $AppName success..."
+                #/usr/local/jdk/bin/java $OPTS -jar $AppName
+	fi
+    pid=`ps -ef |grep java|grep $AppName|grep -v grep|awk '{print $2}'`
+    echo "------------------------------------"
+    echo "curr pid:"$pid
+}
+
+function stop()
+{
+        echo "------------------------------------"
+	echo "Stop $AppName"
+	pid=`ps -ef |grep java|grep $AppName|grep -v grep|awk '{print $2}'`
+	count=`ps -ef |grep java|grep $AppName|grep -v grep|wc -l`
+    echo "before pid:"$pid
+	if [ $count != 0 ];then
+	    kill $pid
+    	count=`ps -ef |grep java|grep $AppName|grep -v grep|wc -l`
+
+		pid=`ps -ef |grep java|grep $AppName|grep -v grep|awk '{print $2}'`
+		kill -9 $pid
+	fi
+}
+
+function restart()
+{
+	stop
+	sleep 2
+	start
+}
+
+function status()
+{
+    count=`ps -ef |grep java|grep $AppName|grep -v grep|wc -l`
+    if [ $count != 0 ];then
+        echo "------------------------------------"
+        echo "$AppName is running..."
+    else
+        echo "------------------------------------"
+        echo "$AppName is not running..."
+    fi
+}
+
+case $1 in
+	start)
+	start;;
+	stop)
+	stop;;
+	restart)
+	restart;;
+	status)
+	status;;
+	*)
+
+	echo -e "\033[0;31m Usage: \033[0m  \033[0;34m sh  $0  {start|stop|restart|status}  {SpringBootJarName} \033[0m
+\033[0;31m Example: \033[0m
+	  \033[0;33m sh  $0  start esmart-test.jar \033[0m"
+esac
