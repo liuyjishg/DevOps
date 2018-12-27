@@ -5,7 +5,18 @@
   "node_name": "consul-01",
   "server": true,
   "bootstrap_expect": 3,
+  "disable_update_check": true,
   "addresses": {
         "http": "0.0.0.0"
   }
 }
+
+
+--------------------------------------------path 2
+
+vim start_consul.sh
+
+#!/bin/bash
+./consul agent -ui -config-file=config.json  &>/u1/consul/logs/consul-server.log  &
+
+
