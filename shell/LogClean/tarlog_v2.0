@@ -1,0 +1,57 @@
+#!/bin/bash
+#filename tar_log.sh
+## --Kevin Liu
+
+log_path=$1
+log_name=$2
+c=$3
+d=$4
+in=-
+end=.log
+
+[[ -z $log_path ]] && log_path=1a
+[[ -z $log_name ]] && log_name=2b
+[[ -z $c ]] && c=3c
+[[ -z $d ]] && d=4d
+
+if [ $log_path == "1a" -o $log_name == "2b" -o $c == "3c" -o $d == "4d" ]
+then
+        echo "执行脚本,要接4个参数"
+        echo "1.log path"
+        echo "2.log name"
+        echo "3.压缩哪天的日志"
+        echo "4.保留多少天"
+        echo
+else
+
+	dates=`date +"%Y-%m-%d" -d "-${c}day"`
+	term=${d}
+	error_log=/home/svcaccttomcat/Clean_log_script/clean_log.log
+
+	find ${log_path}/ |grep ${log_name}${in}${dates} |grep -v tar.gz &>/dev/null
+
+	if [ $? == 0 ]
+	then
+        	cd ${log_path}
+        	find ./ |grep ${log_name}${in}${dates} |grep -v tar.gz |xargs tar czf ${log_name}${in}${dates}.tar.gz
+        	sleep 1        
+        	ls -d ${log_path}/${log_name}${in}${dates}.tar.gz &>/dev/null
+        	
+        	if [ $? == 0 ]
+        	then
+        		find ${log_path}/ |grep ${log_name}${in}${dates} |grep -v tar.gz |xargs rm -fr
+                	sleep 1
+                	find ${log_path}/ -ctime +${term} |xargs rm -fr
+                	##echo "Complete."
+        	else
+                	echo "压缩失败:"${log_path}"/"${log_name}${in}${dates}${end}  >> ${error_log}
+        	fi
+	else
+        	echo "压缩文件未找到:"${log_path}"/"${log_name}${in}${dates}${end}  >> ${error_log}
+	fi
+fi
+
+exit 0
+
+
+## END 
