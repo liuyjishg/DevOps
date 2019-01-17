@@ -1,0 +1,54 @@
+#!/bin/bash
+## --Kevin Liu
+#$1 log path
+#$2 log name
+#$3 压缩多少天以内的日志
+#in 日志与日期间隔的符号 . or -
+
+log_path=$1
+log_name=$2
+day=$3
+in=-
+end=.log
+
+[[ -z $log_path ]] && log_path=1a
+[[ -z $log_name ]] && log_name=2b
+[[ -z $day ]] && day=3c
+
+if [ $log_path == "1a" -o $log_name == "2b" -o $day == "3c" ]
+then
+        echo "执行脚本,要接3个参数"
+        echo "1.log path"
+        echo "2.log name"
+        echo "3.压缩多少天以内的日志"
+        echo
+else
+
+for (( i=${day}; i>1; i-- ))
+do
+        dates=`date +"%Y-%m-%d" -d "-${i}day"`
+        ls -d ${log_path}/${log_name}${in}${dates}.tar.gz &>/dev/null
+        if [ $? == 0 ]
+        then
+                echo ${log_path}"/"${log_name}${in}${dates}".tar.gz 已经存在,不处理."
+        else
+                #ls  ${log_path}/${log_name}${in}${dates}${end} &>/dev/null
+		find ${log_path}/ |grep ${log_name}${in}${dates} |grep -v tar.gz &>/dev/null
+                if [ $? == 0 ]
+                then
+                        cd ${log_path}
+                        find ./ |grep ${log_name}${in}${dates} |grep -v tar.gz |xargs tar czf ${log_name}${in}${dates}.tar.gz
+                        #tar czf ${log_name}${in}${dates}.tar.gz  ./${log_name}${in}${dates}.log &>/dev/null
+                        sleep 1
+                        find ./ |grep ${log_name}${in}${dates} |grep -v tar.gz |xargs rm -fr
+                        #rm -fr ${log_name}${in}${dates}.log
+                        echo ${log_path}"/"${log_name}${in}${dates}${end}": 完成"
+                else
+                        echo ${log_path}"/"${log_name}${in}${dates}${end}" 文件不存在，tar命令不执行"
+                fi
+        fi
+done
+
+fi
+
+#end
