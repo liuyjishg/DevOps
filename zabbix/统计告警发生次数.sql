@@ -1,12 +1,9 @@
 SELECT
-	p.objectid,
-	p.`name`,
-	p.clock,
-	f.itemid,
-	i.hostid,
-	h.`name`,
-	hg.groupid,
-	g.`name`
+	g.`name` AS "host_group",
+	h.`name` AS "host",
+	p.`name` AS "triggers",
+	p.severity AS "告警级别",
+	count(*)
 FROM
 	problem p,
 	functions f,
@@ -15,4 +12,16 @@ FROM
 	hosts_groups hg,
 	hstgrp g
 WHERE
-	p.objectid = f.triggerid AND f.itemid=i.itemid AND i.hostid=h.hostid AND hg.hostid=h.hostid and hg.groupid=g.groupid
+	p.objectid = f.triggerid
+AND f.itemid = i.itemid
+AND i.hostid = h.hostid
+AND hg.hostid = h.hostid
+AND hg.groupid = g.groupid
+AND p.clock > (
+	UNIX_TIMESTAMP(NOW()) - 2678400
+)
+GROUP BY
+	g.`name`,
+	h.`name`,
+	p.severity,
+	p.`name`
