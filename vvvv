@@ -60,3 +60,8 @@ IP: 10.88.6.188
 执行如下操作:
 scp -r /usr/local/walmart-GHS-miniprogram   deployment@10.88.3.22:/data/prod/recommend_188-189/
 
+9: 异常捕获
+主机名:POSERCN10390
+IP: 10.88.6.171
+执行如下操作:
+scp -r /usr/local/quartz   deployment@10.88.3.22:/u1/prod/order_171-172/
