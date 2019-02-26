@@ -1,1 +1,84 @@
 
+#!/bin/bash
+#Author Kevin liu
+
+applist=$2
+hostlist=$3
+[[ $applist == "ALL" ]] && applist=(goods order shopping user bpagent)
+[[ $hostlist == "ALL" ]] && hostlist=(10.88.6.149 10.88.6.150 10.88.6.151 10.88.6.202)
+src=/u1/prod/application_149-151
+dest=/usr/local
+loca=/u1/backup/`date +%Y%m%d`
+
+Publish() {
+  [[ -e $loca ]] && mkdir -p $loca/{new,past}
+
+  for app in ${applist[@]};
+    do
+        path=`ssh svcaccttomcat@10.88.6.149  "find /usr/local/ -name $app" |awk -F "/" '{print $4}'`
+        /usr/bin/scp -r svcaccttomcat@10.88.3.22:$src/$path/$app $loca/new
+
+        if [ -e $loca/past/$app  ]
+        then
+            echo "$app 备份已存在，跳过复制语句。"
+        else
+            /usr/bin/scp -r svcaccttomcat@10.88.6.149:$dest/$path/$app $loca/past
+            echo "$app backup success..."
+        fi
+
+        for host in ${hostlist[@]};
+          do
+              ssh svcaccttomcat@$host  "/usr/local/jdk/bin/jps -l | grep $app |awk '{print \$1}'|xargs kill"
+              echo "$app -> $host Stop success ......"
+              sleep 3
+              /usr/bin/scp -r $loca/new/$app svcaccttomcat@$host:$dest/$path/
+              echo "$app -> $host  publist success..."
+              sleep 2
+              ssh svcaccttomcat@$host "/bin/sh $dest/$path/$app/start.sh"
+              sleep 3
+              ssh svcaccttomcat@$host  "/usr/local/jdk/bin/jps -l | grep $app"
+              if [ $? -eq 0 ]
+              then
+                  echo "$app -> $host Startup success"
+              else
+                  echo "$app -> $host Start fail....请检查应用日志!!!"
+              fi
+        done
+  done
+}
+
+Recover() {
+  for app in ${applist[@]};
+    do
+        for host in ${hostlist[@]};
+          do
+              ssh svcaccttomcat@$host  "/usr/local/jdk/bin/jps -l | grep $app |awk '{print \$1}'|xargs kill"
+              echo "$app -> $host Stop success ......"
+              sleep 3
+              /usr/bin/scp -r $loca/past/$app svcaccttomcat@$host:$dest/$path/
+              echo "$app -> $host  publist success..."
+              sleep 2
+              ssh svcaccttomcat@$host "/bin/sh $dest/$path/$app/start.sh"
+              sleep 3
+              ssh svcaccttomcat@$host  "/usr/local/jdk/bin/jps -l | grep $app"
+              if [ $? -eq 0 ]
+              then
+                  echo "$app -> $host Startup success"
+              else
+                  echo "$app -> $host Start fail....请检查应用日志!!!"
+              fi
+        done
+  done
+}
+
+case $1 in
+Publish)
+    Publish_fun
+    ;;
+Recover)
+    Recover_fun
+    ;;
+*)
+    echo ""usage: inetpanel [ Publist | Recover ]""
+    ;;
+esac
