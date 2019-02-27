@@ -4,9 +4,9 @@
 
 applist=$2
 hostlist=$3
-[[ $applist == "ALL" ]] && applist=(goods order shopping user bpagent)
-[[ $hostlist == "ALL" ]] && hostlist=(10.88.6.149 10.88.6.150 10.88.6.151 10.88.6.202)
-src=/u1/prod/application_149-151
+[[ $applist == "ALL" ]] && applist=(aa bb cc dd)
+[[ $hostlist == "ALL" ]] && hostlist=(10.0.0.10 10.0.0.11 10.0.0.12 10.0.0.13)
+src=/u1/prod/application
 dest=/usr/local
 loca=/u1/backup/`date +%Y%m%d`
 
@@ -15,14 +15,14 @@ Publish() {
 
   for app in ${applist[@]};
     do
-        path=`ssh svcaccttomcat@10.88.6.149  "find /usr/local/ -name $app" |awk -F "/" '{print $4}'`
+        path=`ssh svcaccttomcat@10.0.0.10  "find /usr/local/ -name $app" |awk -F "/" '{print $4}'`
         /usr/bin/scp -r svcaccttomcat@10.88.3.22:$src/$path/$app $loca/new
 
         if [ -e $loca/past/$app  ]
         then
             echo "$app 备份已存在，跳过复制语句。"
         else
-            /usr/bin/scp -r svcaccttomcat@10.88.6.149:$dest/$path/$app $loca/past
+            /usr/bin/scp -r svcaccttomcat@10.0.0.10:$dest/$path/$app $loca/past
             echo "$app backup success..."
         fi
 
