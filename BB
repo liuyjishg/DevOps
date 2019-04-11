@@ -1,1 +1,2 @@
 
+https://s3.amazonaws.com/mongodb-mms-build-onprem/ed64653d5fe3f780e2f1fac0e0f2463448c66a93/mongodb-mms-4.0.10.50461.20190403T1841Z-1.x86_64.rpm
