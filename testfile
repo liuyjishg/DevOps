@@ -1,1 +1,2 @@
 curl -sSL https://zipkin.io/quickstart.sh | bash -s io.zipkin.dependencies:zipkin-dependencies:LATEST zipkin-dependencies.jar
+https://repo1.maven.org/maven2/io/zipkin/dependencies/zipkin-dependencies/
