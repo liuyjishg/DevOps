@@ -1,2 +1,5 @@
 curl -sSL https://zipkin.io/quickstart.sh | bash -s io.zipkin.dependencies:zipkin-dependencies:LATEST zipkin-dependencies.jar
 https://repo1.maven.org/maven2/io/zipkin/dependencies/zipkin-dependencies/
+
+https://aloha.walmartmobile.cn /order-api/order/insertOrderInfoByParam
+https://aloha.walmartmobile.cn/order-api/updateOrderInfoByParam
