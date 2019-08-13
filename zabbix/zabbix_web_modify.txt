@@ -1,0 +1,6 @@
+https://www.520mwx.com/view/21295    修改界面定制化
+
+/usr/share/zabbix/include/defines.inc.php        --修改页脚zabbix版本和2001-2009 这一段
+
+
+/usr/share/zabbix/include/classes/helpers/CBrandHelper.php   110行 改页脚的连接
