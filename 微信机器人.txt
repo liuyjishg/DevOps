@@ -1,0 +1,9 @@
+curl 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=d8d255fa-ef75-4eab-b566-d3a0060fc9a6' \
+   -H 'Content-Type: application/json' \
+   -d '
+   {
+        "msgtype": "text",
+        "text": {
+            "content": "hello world"
+        }
+   }'
