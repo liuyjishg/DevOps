@@ -1,0 +1,130 @@
+1.下载阿里云镜像repo文件
+项目使用CentOS6系统，因此我下载的文件是：
+
+# CentOS-Base.repo
+#
+# The mirror system uses the connecting IP address of the client and the
+# update status of each mirror to pick mirrors that are updated to and
+# geographically close to the client.  You should use this for CentOS updates
+# unless you are manually picking other mirrors.
+#
+# If the mirrorlist= does not work for you, as a fall back you can try the
+# remarked out baseurl= line instead.
+#
+#
+[base]
+name=CentOS-$releasever - Base - mirrors.aliyun.com
+failovermethod=priority
+baseurl=http://mirrors.aliyun.com/centos/$releasever/os/$basearch/
+        http://mirrors.aliyuncs.com/centos/$releasever/os/$basearch/
+#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os
+gpgcheck=1
+gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-6
+#released updates
+[updates]
+name=CentOS-$releasever - Updates - mirrors.aliyun.com
+failovermethod=priority
+baseurl=http://mirrors.aliyun.com/centos/$releasever/updates/$basearch/
+        http://mirrors.aliyuncs.com/centos/$releasever/updates/$basearch/
+#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates
+gpgcheck=1
+gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-6
+#additional packages that may be useful
+[extras]
+name=CentOS-$releasever - Extras - mirrors.aliyun.com
+failovermethod=priority
+baseurl=http://mirrors.aliyun.com/centos/$releasever/extras/$basearch/
+        http://mirrors.aliyuncs.com/centos/$releasever/extras/$basearch/
+#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras
+gpgcheck=1
+gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-6
+#additional packages that extend functionality of existing packages
+[centosplus]
+name=CentOS-$releasever - Plus - mirrors.aliyun.com
+failovermethod=priority
+baseurl=http://mirrors.aliyun.com/centos/$releasever/centosplus/$basearch/
+        http://mirrors.aliyuncs.com/centos/$releasever/centosplus/$basearch/
+#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=centosplus
+gpgcheck=1
+enabled=0
+gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-6
+#contrib - packages by Centos Users
+[contrib]
+name=CentOS-$releasever - Contrib - mirrors.aliyun.com
+failovermethod=priority
+baseurl=http://mirrors.aliyun.com/centos/$releasever/contrib/$basearch/
+        http://mirrors.aliyuncs.com/centos/$releasever/contrib/$basearch/
+#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=contrib
+gpgcheck=1
+enabled=0
+gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-6
+2.刷新缓存
+
+yum clean all
+yum makecache
+3.yum repolist
+
+[root@localhost yum.repos.d]# yum repolist
+已加载插件：fastestmirror, security
+Loading mirror speeds from cached hostfile
+ * base: mirrors.aliyun.com
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+仓库标识仓库名称状态
+baseCentOS-6 - Base - mirrors.aliyun.com6,706
+extras  CentOS-6 - Extras - mirrors.aliyun.com 46
+updates CentOS-6 - Updates - mirrors.aliyun.com   826
+repolist: 7,778
+4.同步镜像到本地
+
+reposync -r base
+reposync -r extras
+reposync -r updates
+
+5.创建YUM仓库
+
+yum installcreaterepo yum-utils -y
+cd base
+createrepo ./
+cd ../extras
+createrepo ./
+cd ../updates
+createrepo ./
+
+6.安装本地Web服务器
+
+贴上配置文件nginx.conf:
+
+server {
+    listen       80;
+    server_name  localhost;
+    root /yumrepo;
+    #charset koi8-r;
+    #access_log  logs/host.access.log  main;
+    location / {
+        autoindex on;
+        autoindex_exact_size off;
+        autoindex_localtime on;
+    }
+7.其他服务器连接YUM仓库：
+
+vim /etc/yum.repos.d/test.repo
+[base]
+name=CentOS-Base(GDS)
+baseurl=http://10.63.215.7/base
+path=/
+enabled=1
+gpgcheck=0
+[updates]
+name=CentOS-Updates(GDS)
+baseurl=http://10.63.215.7/updates
+path=/
+enabled=1
+gpgcheck=0
+[extras]
+name=CentOS-Extras(GDS)
+baseurl=http://10.63.215.7/extras
+path=/
+enabled=1
+gpgcheck=0
+8.完工！
