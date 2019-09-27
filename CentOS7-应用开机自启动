@@ -1,0 +1,56 @@
+例：
+1. redis源码，并使用tar进行解压缩
+wget http://download.redis.io/releases/redis-4.0.8.tar.gz
+tar xvzf redis-4.0.8.tar.gz
+2.使用gcc进行编译
+make
+make test
+编译后的可执行文件在redis-4.0.8/src目录下
+
+3.使用root权限创建redis文件目录,并复制redis-server redis-cli
+
+mkdir -p /usr/local/redis  
+cp src/redis-server /usr/local/redis/  
+cp src/redis-cli /usr/local/redis/  
+cp redis.conf /usr/local/redis/  
+ 
+sudo gropdadd redis
+sudo useradd -g redis redis --no-create-home
+sudo chown -R redis:redis /usr/local/redis
+
+4.编辑配置文件redis.conf，将daemonize 改为yes支持后台运行
+cd /usr/local/redis/
+vim redis.conf
+添加 daemonize yes
+
+5.添加开机启动服务
+vim /etc/systemd/system/redis-server.service
+添加如下内容
+
+[Unit]
+Description=Redis Server Manager
+After=syslog.target
+After=network.target
+ 
+[Service]
+Type=simple
+User=redis
+Group=redis
+PIDFile=/var/run/redis_6379.pid
+ExecStart=/usr/local/redis/redis-server /usr/local/redis/redis.conf
+ExecStop=/usr/local/redis/redis-cli shutdown
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
+设置为开机启动
+
+systemctl daemon-reload 
+systemctl start redis-server.service 
+systemctl enable redis-server.service
+创建redis-cli软连接
+
+ln -s /usr/local/redis/redis-cli /usr/bin/redis-cli
+————————————————
+版权声明：本文为CSDN博主「sjhuangx」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/sjhuangx/article/details/79633112
